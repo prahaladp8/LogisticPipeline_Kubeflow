@@ -1,0 +1,42 @@
+# -------------------------- Generic Parameters required for running Logistic Pipeline ------------------------ 
+project_name : Logistic Pipeline # This information is used to create a new ML Flow Experiment 
+reports_directory : Reports # Directory where all reports are stored
+data_directory : Data # All Train, Test, PDV & OOT dataset must be placed here
+model_directory : Models # Output folder for the Models
+log_directory : Logs
+log_all_report : True
+write_cleansed_data : False
+training_dataset : Data/loan_data_2007_2014.csv
+testing_dataset : 
+validation_dataset : 
+oot_dataset : Data/loan_data_2015.csv
+target_variable : loan_status
+target_variable_bad_values : ['Charged Off','Late (31-120 days)','Default','Does not meet the credit policy. Status:Charged Off'] # a list of all such values the the model will classifiy as a Non Event / Fail / Default
+excluded_variable_list : ['id','member_id','issue_d','earliest_cr_line','url','last_pymnt_d','next_pymnt_d','last_credit_pull_d'] # comma seperated lists of all variables the model will not consider
+set_execution_steps:
+  univariate : True
+  bivariate : False
+  multivariate : False
+  feature_reduction : False
+  model_building : False
+  fine_tuning : False
+execution_step_inputs:
+  univariate_inputs: 
+    drop_missing_value_threshold : 0.6
+    impute_numeric_missing_values : mean # Other Possible values = [ mean, median, constant, drop ] 
+    impute_categorical_missing_values : missing # Will replace all value with 'missing'
+  bivariate_inputs:
+    csi_threshold : 0.25 # Thresshold value above which Pipelines drops all featutes who's csi score exceed (comparison between training and oot dataset)
+    csi_bucket_counts : 10
+    iv_threshold : 0.02
+    correlation_threshold : 0.6
+    cramersv_threshold : 0.1
+  multivariate_inputs:
+    vif_threshold : 5
+  model_building:
+    risk_bands : 10   # No of Risk Bands that the model will create
+  feature_reduction:
+    max_shortlisted_features : 10
+    method : RFE # Regression Technique used to reduce features, Other Values [ Forward, Backward, RFE ]    
+  fine_tuneing:
+    l1_penatly : 0.1
