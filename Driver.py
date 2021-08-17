@@ -23,8 +23,8 @@ def pre_execute():
     if not os.path.exists(os.getcwd()+'/outputs'):
         os.mkdir(os.getcwd()+'/outputs')
 
-    if not os.path.exists(outputpath):
-        os.mkdir(outputpath)
+    #if not os.path.exists(outputpath):
+    #    os.mkdir(outputpath)
 
     if not os.path.exists(os.getcwd()+'/base/Data'):
         os.mkdir(os.getcwd()+'/base/Data')

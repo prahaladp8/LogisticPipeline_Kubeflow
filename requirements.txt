@@ -1,0 +1,9 @@
+pandas
+numpy
+scikit-learn
+statsmodels
+scipy
+category_encoders
+matplotlib
+openpyxl
+mlflow
