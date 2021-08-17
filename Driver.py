@@ -29,15 +29,17 @@ def pre_execute():
     if not os.path.exists(os.getcwd()+'/base/Data'):
         os.mkdir(os.getcwd()+'/base/Data')
 
-
+    print(outputpath)
+    print(inputpath)
+    
     print('op is directory : '+str(os.path.isdir(outputpath)))
     print('in is directory : '+str(os.path.isdir(inputpath)))
 
-    print('op is directory : '+str(os.path.isfile(outputpath)))
-    print('in is directory : '+str(os.path.isfile(inputpath)))
+    print('op is file : '+str(os.path.isfile(outputpath)))
+    print('in is file : '+str(os.path.isfile(inputpath)))
 
-    print('op exists : '+ str( os.path.exist(outputpath)))
-    print('ip exists : '+ str( os.path.exist(inputpath)))
+    print('op exists : '+ str( os.path.exists(outputpath)))
+    print('ip exists : '+ str( os.path.exists(inputpath)))
 
     dest_loc = os.getcwd()+'/inputs'
     for item in os.listdir(inputpath):
