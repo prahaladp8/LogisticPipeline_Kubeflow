@@ -43,9 +43,9 @@ def pre_execute():
 
     print(type(inputpath))
     import pandas as pd
-    df = pd.read_csv(inputpath)
+    df = pd.read_csv(inputpath+"/loan_data_2015.csv")
     print(df.shape)
-    
+
     dest_loc = os.getcwd()+'/inputs'
     for item in os.listdir(inputpath):
         shutil.copy2(inputpath+'/'+item, dest_loc)
