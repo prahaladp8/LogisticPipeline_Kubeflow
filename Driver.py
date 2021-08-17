@@ -41,6 +41,11 @@ def pre_execute():
     print('op exists : '+ str( os.path.exists(outputpath)))
     print('ip exists : '+ str( os.path.exists(inputpath)))
 
+    print(type(inputpath))
+    import pandas as pd
+    df = pd.read_csv(inputpath)
+    print(df.shape)
+    
     dest_loc = os.getcwd()+'/inputs'
     for item in os.listdir(inputpath):
         shutil.copy2(inputpath+'/'+item, dest_loc)
@@ -49,6 +54,7 @@ def pre_execute():
     for item in os.listdir(inputpath):
         shutil.copy2(inputpath+'/'+item, dest_loc)
 
+    
     #look to accept yaml file also
     
     return {'inputpath': inputpath,'stage': stage,'outputpath':outputpath} 
