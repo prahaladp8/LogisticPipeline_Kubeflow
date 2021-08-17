@@ -29,6 +29,16 @@ def pre_execute():
     if not os.path.exists(os.getcwd()+'/base/Data'):
         os.mkdir(os.getcwd()+'/base/Data')
 
+
+    print('op is directory : '+str(os.path.isdir(outputpath)))
+    print('in is directory : '+str(os.path.isdir(inputpath)))
+
+    print('op is directory : '+str(os.path.isfile(outputpath)))
+    print('in is directory : '+str(os.path.isfileinputpath)))
+
+    print('op exists : '+ str( os.path.exist(outputpath)))
+    print('ip exists : '+ str( os.path.exist(inputpath)))
+
     dest_loc = os.getcwd()+'/inputs'
     for item in os.listdir(inputpath):
         shutil.copy2(inputpath+'/'+item, dest_loc)
