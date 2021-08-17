@@ -34,7 +34,7 @@ def pre_execute():
     print('in is directory : '+str(os.path.isdir(inputpath)))
 
     print('op is directory : '+str(os.path.isfile(outputpath)))
-    print('in is directory : '+str(os.path.isfileinputpath)))
+    print('in is directory : '+str(os.path.isfile(inputpath)))
 
     print('op exists : '+ str( os.path.exist(outputpath)))
     print('ip exists : '+ str( os.path.exist(inputpath)))
