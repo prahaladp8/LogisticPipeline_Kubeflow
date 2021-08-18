@@ -50,6 +50,12 @@ def pre_execute():
     df = pd.read_csv(inputpath)
     print(df.shape)
 
+    df2 = pd.read_csv("/tmp/inputs/input_path/loan_data_2015.csv")
+    print(df2.shape)
+
+    for items in os.listdir(os.path.dirname(inputpath)):
+        print(items)
+
     dest_loc = os.getcwd()+'/inputs'
     for item in os.listdir(inputpath):
         shutil.copy2(inputpath+'/'+item, dest_loc)
