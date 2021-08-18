@@ -1,0 +1,27 @@
+name: Prepare Data
+description: This Container accepts inputs and creats data for the Pipeline
+inputs:
+- {name: input_path, type: str, description: 'Folder Path for all inputs to Pipeline'}
+- {name: execution_stage, type: str, description: 'Stage of Execution'}
+outputs:
+  - {name: output_path, type: str, description: 'Location for all stage outputs'}
+implementation:
+  container:
+    image: prahaladp8/lrbase:latest
+    command:
+    - sh
+    - -ec
+    - |
+      program_path=$(mktemp)
+      printf "%s" "$0" > "$program_path"
+      python3 -u "$program_path" "$@"
+
+      python3, Driver.py,
+    
+    args:
+    - --inputpath
+    - {inputPath: input_path}
+    - --stage
+    - 'prepare_data'
+    - --outputpath
+    - {outputPath: output_path}
