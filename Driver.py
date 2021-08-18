@@ -26,6 +26,10 @@ def pre_execute():
     #if not os.path.exists(outputpath):
     #    os.mkdir(outputpath)
 
+    
+    os.makedirs(os.path.dirname(outputpath), exist_ok=True)
+        
+
     if not os.path.exists(os.getcwd()+'/base/Data'):
         os.mkdir(os.getcwd()+'/base/Data')
 
@@ -43,7 +47,7 @@ def pre_execute():
 
     print(type(inputpath))
     import pandas as pd
-    df = pd.read_csv(inputpath+"/loan_data_2015.csv")
+    df = pd.read_csv(os.path.dirname(inputpath)+"/loan_data_2015.csv")
     print(df.shape)
 
     dest_loc = os.getcwd()+'/inputs'
