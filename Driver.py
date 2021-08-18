@@ -47,7 +47,7 @@ def pre_execute():
 
     print(type(inputpath))
     import pandas as pd    
-    df = pd.read_csv(inputpath))
+    df = pd.read_csv(inputpath)
     print(df.shape)
 
     dest_loc = os.getcwd()+'/inputs'
