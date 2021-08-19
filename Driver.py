@@ -26,10 +26,10 @@ def pre_execute():
     if not os.path.exists(os.getcwd()+'/outputs'):
         os.mkdir(os.getcwd()+'/outputs')
 
-    if not os.path.exists(outputpath):
-        os.mkdir(outputpath)
+    #if not os.path.exists(outputpath):
+    #    os.mkdir(outputpath)
     
-    #os.makedirs(os.path.dirname(outputpath), exist_ok=True)
+    os.makedirs(os.path.dirname(outputpath))
         
 
     #Actual Data folder
