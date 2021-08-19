@@ -1100,10 +1100,10 @@ class LogisticPipeline:
         
         bins_info = self.get_bin_info(result_model_pipelines['model_bins'])
         risk_bands =  result_model_pipelines['pd_risk_bands']
-        with open(pl.DefaultInfo.default_staging_location+"/model_preprocessor.pkl", 'wb') as file:
+        with open(os.getcwd()+'/base/'+pl.DefaultInfo.default_staging_location+"/model_preprocessor.pkl", 'wb') as file:
             pickle.dump(result_model_pipelines, file)
 
-        with open(pl.DefaultInfo.default_staging_location+"/woe_bins.pkl", 'wb') as file:
+        with open(os.getcwd()+'/base/'+pl.DefaultInfo.default_staging_location+"/woe_bins.pkl", 'wb') as file:
             pickle.dump(bins_info, file)
 
         self.convert_df_to_html(bins_info,self.pipeline_configuration['reports_directory'],'Var.Bins',hide_index=True)
@@ -1112,7 +1112,7 @@ class LogisticPipeline:
         self.log('Result Model Pipeline - ')
         self.log(result_model_pipelines['model_pipeline'])
 
-        firstcut_model = self.pipeline_configuration['model_directory']+"/first_cut_model.pkl"
+        firstcut_model = os.getcwd()+'/base/'+self.pipeline_configuration['model_directory']+"/first_cut_model.pkl"
 
         with open(firstcut_model, 'wb') as file:
             pickle.dump(result_model_pipelines['model_pipeline'], file)
