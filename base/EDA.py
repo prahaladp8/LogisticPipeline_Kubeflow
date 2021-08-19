@@ -982,7 +982,8 @@ class LogisticPipeline:
             pickle.dump(df, file)
 
     def save_stage_kf(self,df,stage,container_output_path):
-        pkl_filename = container_output_path+"/"+stage+".pkl"
+        pkl_filename = container_output_path
+        #+"/"+stage+".pkl"
         with open(pkl_filename, 'wb') as file:
             pickle.dump(df, file)
 
@@ -1015,7 +1016,8 @@ class LogisticPipeline:
 
     def reduce_variables(self,input_path,output_path):
         #read and replace pickle & load others files for the stage here
-        pkl = pd.read_pickle(input_path+'/univariate.pkl')
+        pkl = pd.read_pickle(input_path)
+        #+'/univariate.pkl')
         self = pkl
         #call next set of functions
         self.log('Begining Bivariate Analysis') 
