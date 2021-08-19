@@ -17,6 +17,7 @@ from openpyxl.utils.dataframe import dataframe_to_rows
 
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 from statsmodels.tools.tools import add_constant
+import os
 
 class Reporting:
     def __init__(self,training_set,testing_set,pdv_set,oot_set,bin_info,fine_tuneing=False):                
@@ -43,10 +44,10 @@ class Reporting:
     def generate_reports(self):
         #Start
         #TODO Look to 
-        temp_obj  = pd.read_pickle('temp/model_building.pkl')   #TODO Look to replace
+        temp_obj  = pd.read_pickle(os.getcwd()+'/base/'+'temp/model_building.pkl')   #TODO Look to replace
         #checks on oot & pdv TODO
         #checks on preprocessor.pkl TODO
-        model_obj = pd.read_pickle('temp/model_preprocessor.pkl')  #TODO Look to replace
+        model_obj = pd.read_pickle(os.getcwd()+'/base/'+'temp/model_preprocessor.pkl')  #TODO Look to replace
         test_data = temp_obj.testing_set
         #pd.read_csv('temp/test-binned-result.csv')#Comment
         oot_data = temp_obj.oot_set
@@ -97,7 +98,7 @@ class Reporting:
         test_df = pd.concat([test_preds_bins,test_ypred],axis=1)
         #test_df = test_df.sample(frac=0.2) #Comment Out
         #test_df.reset_index(inplace=True) #Comment Out
-        test_df.to_csv('temp/test-binned-result.csv',index=False) #Comment Out
+        test_df.to_csv(os.getcwd()+'/base/'+'temp/test-binned-result.csv',index=False) #Comment Out
         #TODO add Risk Band details here
 
         reporting_df_test = process_data(test_df,'Test',features)
@@ -117,7 +118,7 @@ class Reporting:
             #3.2 combining & write oot
             oot_ypred = pd.Series(oot_predicted['ypred'],name='predicted')
             oot_df = pd.concat([oot_preds_bins,oot_ypred],axis=1)
-            oot_df.to_csv('temp/oot-binned-result.csv',index=False)  #Comment
+            oot_df.to_csv(os.getcwd()+'/base/'+'temp/oot-binned-result.csv',index=False)  #Comment
             #TODO add Risk Band details here
             #3.3 Creating reporting_df
             reporting_df_oot = process_data(oot_df,'OOT',features)
@@ -137,7 +138,7 @@ class Reporting:
             #3.2 combining & write oot
             pdv_ypred = pd.Series(pdv_preds_bins['ypred'],name='predicted')
             pdv_df = pd.concat([pdv_preds_bins,pdv_ypred],axis=1)
-            pdv_df.to_csv('temp/oot-binned-result.csv',index=False)  #Comment
+            pdv_df.to_csv(os.getcwd()+'/base/'+'temp/oot-binned-result.csv',index=False)  #Comment
             #TODO add Risk Band details here
             #3.3 Creating reporting_df
             reporting_df_pdv = process_data(oot_df,'PDV',features)
@@ -156,7 +157,7 @@ class Reporting:
             model_band_psi = compute_model_band_psi(psi_train_df,psi_test_df,None,psi_oot_df) #Risk Bands
 
         
-        reporting_df_final.to_csv('Reports/Reporting_Data.csv',index=False)
+        reporting_df_final.to_csv(os.getcwd()+'/base/'+'Reports/Reporting_Data.csv',index=False)
 
         #-----------------     Begin Reporting        ----------------------------
         #Creating empty Reporting file 
@@ -164,9 +165,9 @@ class Reporting:
         ws = wb.active
         ws.title = '4.Bivariates'
         ws.sheet_view.showGridLines = False
-        wb.save(filename='Reports/Post_Train_Model_Report.xlsx')
+        wb.save(filename=os.getcwd()+'/base/'+'Reports/Post_Train_Model_Report.xlsx')
 
-        reporting_df_final = pd.read_csv('Reports/Reporting_Data.csv')  #Comment
+        reporting_df_final = pd.read_csv(os.getcwd()+'/base/'+'Reports/Reporting_Data.csv')  #Comment
         features = reporting_df_final['Feature'].unique().tolist()
 
 
@@ -234,18 +235,18 @@ class Reporting:
             model_band_psi_dict['PSI_Train_PDV'] = [model_band_psi['PSI_PDV'].sum()]
         append_model_report(pd.DataFrame(model_band_psi_dict),"10. ModelBand_PSI_Final") 
 
-        wb = openpyxl.load_workbook('Reports/Post_Train_Model_Report.xlsx')
+        wb = openpyxl.load_workbook(os.getcwd()+'/base/'+'Reports/Post_Train_Model_Report.xlsx')
         for sheet in wb.sheetnames:
             ws = wb[sheet]
             for col in map(chr, range(ord('A'), ord('Z')+1)):
                 ws.column_dimensions[col].width = 11.5
 
-        wb.save(filename='Reports/Post_Train_Model_Report.xlsx')
+        wb.save(filename=os.getcwd()+'/base/'+'Reports/Post_Train_Model_Report.xlsx')
         self.set_mlflow_metrics(accuracy_dict)
 
 def append_model_report(df,name):
-    book = load_workbook('Reports/Post_Train_Model_Report.xlsx')
-    writer = pd.ExcelWriter('Reports/Post_Train_Model_Report.xlsx',engine='openpyxl')
+    book = load_workbook(os.getcwd()+'/base/'+'Reports/Post_Train_Model_Report.xlsx')
+    writer = pd.ExcelWriter(os.getcwd()+'/base/'+'Reports/Post_Train_Model_Report.xlsx',engine='openpyxl')
     writer.book = book    
     df.to_excel(writer,sheet_name=name,index=False)
     book._sheets.sort(key=lambda ws: ws.title)
@@ -333,7 +334,7 @@ def process_data(cons_df,source,features):
         consolidated_feature_count_df = pd.concat([consolidated_feature_count_df,new_df],axis=0)
         #print(consolidated_feature_count_df)
     consolidated_feature_count_df['Source'] = source    
-    #consolidated_feature_count_df.to_csv('final.csv',ignore_index=True)
+    #consolidated_feature_count_df.to_csv(os.getcwd()+'/base/'+'final.csv',ignore_index=True)
     return consolidated_feature_count_df
 
 def plot_bads(bins, total_list_oot, badrate_list_oot,source,feature,location='temp'):
@@ -379,11 +380,12 @@ def plot_bads(bins, total_list_oot, badrate_list_oot,source,feature,location='te
 
     #fig.tight_layout()
     #plt.show()
+    #CHECK
     path = location+'/'+feature+'-'+source+'.png'
     plt.savefig(path)
     plt.clf()
 
-    wb = openpyxl.load_workbook('Reports/Post_Train_Model_Report.xlsx')
+    wb = openpyxl.load_workbook(os.getcwd()+'/base/'+'Reports/Post_Train_Model_Report.xlsx')
     if not("4.Bivariates" in wb.sheetnames): 
         ws =  wb.create_sheet("Bivariates")
         ws.sheet_view.showGridLines = False
@@ -410,7 +412,7 @@ def plot_bads(bins, total_list_oot, badrate_list_oot,source,feature,location='te
             #img.anchor(cell)
             ws.add_image(img, img_cell)            
             break          
-    wb.save('Reports/Post_Train_Model_Report.xlsx')
+    wb.save(os.getcwd()+'/base/'+'Reports/Post_Train_Model_Report.xlsx')
 
 def plot_all_bads(final_df,features):
     for feature in features:
@@ -439,7 +441,7 @@ def plot_all_bads(final_df,features):
             badrate_list[i] = round(badrate_list[i] * 100.0,2)
 
 
-        plot_bads(bins, total_list, badrate_list,source='test',feature=feature,location='temp/img')
+        plot_bads(bins, total_list, badrate_list,source='test',feature=feature,location=os.getcwd()+'/base/'+'temp/img')
 
         
         bins = final_df[ (final_df['Source'] == 'PDV') & (final_df['Feature'] == feature) ]['Bins'].tolist()
@@ -453,7 +455,7 @@ def plot_all_bads(final_df,features):
         for i in range(len(badrate_list)):
             badrate_list[i] = round(badrate_list[i] * 100.0,2)
         
-        plot_bads(bins, total_list, badrate_list,source='pdv',feature=feature,location='temp/img')
+        plot_bads(bins, total_list, badrate_list,source='pdv',feature=feature,location=os.getcwd()+'/base/'+'temp/img')
 
 def build_psi_report(final_df,features):
     psi_final_df = pd.DataFrame()
@@ -523,7 +525,7 @@ def build_psi_report(final_df,features):
     append_model_report(psi_final_df,'7.CSI_Detailed')
     append_model_report(summarized_psi,'8.CSI_Summary')
     
-    #psi_final_df.to_csv('temp/combined_bins.csv')        
+    #psi_final_df.to_csv(os.getcwd()+'/base/'+'temp/combined_bins.csv')        
 
 def build_cramersv_report(test_data,oot_data,pdv_data,features,dependent_feature):
 
@@ -578,7 +580,7 @@ def build_cramersv_report(test_data,oot_data,pdv_data,features,dependent_feature
     cramersv_final_df = cramersv_final_df.merge(cv_temp_df,left_on='Feature',right_on='Feature')
     append_model_report(cramersv_final_df,'6.CramersV')
     
-    #cramersv_final_df.to_csv('temp/CramersV.csv')
+    #cramersv_final_df.to_csv(os.getcwd()+'/base/'+'temp/CramersV.csv')
 
 def build_iv_report(final_df,features):
     sources = final_df['Source'].unique()
@@ -611,8 +613,8 @@ def build_iv_report(final_df,features):
 
 def build_model_report(pipeline_obj,test,oot=None,pdv=None):
 
-    book = load_workbook('Reports/Post_Train_Model_Report.xlsx')
-    writer = pd.ExcelWriter('Reports/Post_Train_Model_Report.xlsx',engine='openpyxl')
+    book = load_workbook(os.getcwd()+'/base/'+'Reports/Post_Train_Model_Report.xlsx')
+    writer = pd.ExcelWriter(os.getcwd()+'/base/'+'Reports/Post_Train_Model_Report.xlsx',engine='openpyxl')
     writer.book = book
     ws = book.create_sheet('1.Model Summary')
     ws.sheet_view.showGridLines = False
@@ -797,7 +799,7 @@ def compute_model_band_psi(model_risk_bands_train,model_risk_bands_test,model_ri
     
     psi_model_band_df['Population_Train'] = psi_model_band_df['Count_Train'] / total_population_train       
 
-    model_risk_bands_test.to_csv('temp/model_risk_bands_test.csv')
+    model_risk_bands_test.to_csv(os.getcwd()+'/base/'+'temp/model_risk_bands_test.csv')
     model_band_psi_final_df = pd.concat([model_band_psi_final_df,psi_model_band_df],axis=1)
 
     psi_model_band_df = model_risk_bands_test[['Risk_Bands','Actuals']].groupby(['Risk_Bands'], dropna=True).agg(['count','sum']).reset_index()       
@@ -806,7 +808,7 @@ def compute_model_band_psi(model_risk_bands_train,model_risk_bands_test,model_ri
     #total_population  = psi_model_band_df['Count_Test'].sum()
     
     psi_model_band_df['Population_Test'] = psi_model_band_df['Count_Test'] / total_population_test  
-    psi_model_band_df.to_csv('temp/test-chk.csv')        
+    psi_model_band_df.to_csv(os.getcwd()+'/base/'+'temp/test-chk.csv')        
     psi_model_band_df['Bads_Test'] =  psi_model_band_df['Count_Test'] - psi_model_band_df['Goods_Test']
     psi_model_band_df['Cum_Bads_Test'] =  psi_model_band_df['Bads_Test'].cumsum()
     psi_model_band_df['Cum_Bads%_Test'] =  psi_model_band_df['Bads_Test'] / psi_model_band_df['Bads_Test'].sum()
@@ -817,7 +819,7 @@ def compute_model_band_psi(model_risk_bands_train,model_risk_bands_test,model_ri
 
     if pdv_set:
         psi_model_band_df = model_risk_bands_pdv[['Risk_Bands','Actuals']].groupby(['Risk_Bands'], dropna=True).agg(['count','sum']).reset_index()       
-        psi_model_band_df.to_csv('temp/pdv-chk.csv') 
+        psi_model_band_df.to_csv(os.getcwd()+'/base/'+'temp/pdv-chk.csv') 
         psi_model_band_df.columns = ['Risk_Bands_PDV','Count_PDV','Goods_PDV']    
         #total_population  = psi_model_band_df['Count_PDV'].sum()
         psi_model_band_df['lift_per_band'] = pd.Series(lifts,name='Lift')
@@ -831,7 +833,7 @@ def compute_model_band_psi(model_risk_bands_train,model_risk_bands_test,model_ri
 
     if oot_set:        
         psi_model_band_df = model_risk_bands_oot[['Risk_Bands','Actuals']].groupby(['Risk_Bands'], dropna=True).agg(['count','sum']).reset_index()       
-        psi_model_band_df.to_csv('temp/oot-chk.csv') 
+        psi_model_band_df.to_csv(os.getcwd()+'/base/'+'temp/oot-chk.csv') 
         psi_model_band_df.columns = ['Risk_Bands_OOT','Count_OOT','Goods_OOT']    
         #total_population  = psi_model_band_df['Count_OOT'].sum()
         psi_model_band_df['lift_per_band'] = pd.Series(lifts,name='Lift')
@@ -855,12 +857,12 @@ def compute_model_band_psi(model_risk_bands_train,model_risk_bands_test,model_ri
         model_band_psi_final_df['PSI_PDV'] = (model_band_psi_final_df['Population_Train'] - model_band_psi_final_df['Population_PDV']) * np.log(model_band_psi_final_df['Population_Train']/model_band_psi_final_df['Population_PDV'])
         model_band_psi_final_df['PSI_PDV'] = model_band_psi_final_df['PSI_PDV'].replace(to_replace=[np.inf,-np.inf],value=[0,0])
 
-    model_band_psi_final_df.to_csv('temp/Model_Band_PSI.csv')       
+    model_band_psi_final_df.to_csv(os.getcwd()+'/base/'+'temp/Model_Band_PSI.csv')       
     return model_band_psi_final_df
 
 def plot_gains_lift(model_band_psi):
-    book = load_workbook('Reports/Post_Train_Model_Report.xlsx')
-    writer = pd.ExcelWriter('Reports/Post_Train_Model_Report.xlsx',engine='openpyxl')
+    book = load_workbook(os.getcwd()+'/base/'+'Reports/Post_Train_Model_Report.xlsx')
+    writer = pd.ExcelWriter(os.getcwd()+'/base/'+'Reports/Post_Train_Model_Report.xlsx',engine='openpyxl')
     writer.book = book    
     #df.to_excel(writer,sheet_name=name,index=False)
     #print(book.sheetnames)
@@ -880,7 +882,7 @@ def plot_gains_lift(model_band_psi):
 
     #------------------------------------ Gain Table Test --------------------------------
     
-    path = 'temp/Gain'+'-'+'test'+'.png'
+    path = os.getcwd()+'/base/'+'temp/Gain'+'-'+'test'+'.png'
     plt.clf() 
     plt.xlabel('Risk Bands')
     plt.ylabel('Gain(%)')
@@ -896,7 +898,7 @@ def plot_gains_lift(model_band_psi):
 
     #------------------------------------ Lift Table Test --------------------------------
     test_lift = model_band_psi['Lift_Test'].to_list()
-    lift_path = 'temp/Lift'+'-'+'test'+'.png' 
+    lift_path = os.getcwd()+'/base/'+'temp/Lift'+'-'+'test'+'.png' 
     plt.clf() 
     plt.xlabel('Risk Bands')
     plt.ylabel('Lift')
@@ -919,7 +921,7 @@ def plot_gains_lift(model_band_psi):
         #model_band_psi['Risk_Bands_OOT'].astype(str).tolist()
         risk_bands_lab = risk_bands.copy()
         risk_bands_lab[:] = [ "Band "+str(risk_bands[x])  if x%2==0 else '' for x in risk_bands]          
-        path = 'temp/Gain'+'-'+'oot'+'.png'
+        path = os.getcwd()+'/base/'+'temp/Gain'+'-'+'oot'+'.png'
         plt.clf() 
         plt.xlabel('Risk Bands')
         plt.ylabel('Gain(%)')
@@ -933,7 +935,7 @@ def plot_gains_lift(model_band_psi):
         gain_sheet.add_image(img, oot_col+str(start_index))
 
         oot_lift = model_band_psi['Lift_OOT'].to_list()
-        lift_path = 'temp/Lift'+'-'+'oot'+'.png'    
+        lift_path = os.getcwd()+'/base/'+'temp/Lift'+'-'+'oot'+'.png'    
         plt.clf() 
         plt.xlabel('Risk Bands')
         plt.ylabel('Lift')
@@ -954,7 +956,7 @@ def plot_gains_lift(model_band_psi):
         risk_bands_lab = risk_bands.copy()
         risk_bands_lab[:] = [ risk_bands[x]  if x%2==0 else '' for x in risk_bands]
         plt.xticks(ticks=risk_bands,labels=risk_bands_lab,rotation=45)
-        path = 'temp/Gain'+'-'+'pdv'+'.png'
+        path = os.getcwd()+'/base/'+'temp/Gain'+'-'+'pdv'+'.png'
         plt.clf() 
         plt.xlabel('Risk Bands')
         plt.ylabel('Gain(%)')        
@@ -967,7 +969,7 @@ def plot_gains_lift(model_band_psi):
         gain_sheet.add_image(img, pdv_col+str(start_index))
 
         pdv_lift = model_band_psi['Lift_PDV'].to_list()
-        lift_path = 'temp/Lift'+'-'+'pdv'+'.png'    
+        lift_path = os.getcwd()+'/base/'+'temp/Lift'+'-'+'pdv'+'.png'    
         plt.clf() 
         plt.xlabel('Risk Bands')
         plt.ylabel('Lift')
