@@ -61,11 +61,11 @@ def pre_execute():
         print(items)
 
     dest_loc = os.getcwd()+'/inputs'
-    for item in os.listdir(inputpath):
+    for item in os.listdir(os.path.dirname(inputpath)):
         shutil.copy2(inputpath+'/'+item, dest_loc)
 
     dest_loc = os.getcwd()+'/base/Data'
-    for item in os.listdir(inputpath):
+    for item in os.listdir(os.path.dirname(inputpath)):
         shutil.copy2(inputpath+'/'+item, dest_loc)
 
     
