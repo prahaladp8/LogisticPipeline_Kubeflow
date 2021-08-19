@@ -76,14 +76,12 @@ if __name__ == '__main__':
         lr_pipeline.prepare_pipeline()
         if pre_execute_dict['stage'] == "prepare_data":
             lr_pipeline.prepare_data(pre_execute_dict['inputpath'])
-            #return pre_execute_dict['inputpath']
         elif pre_execute_dict['stage'] == "variable_reduction":
             lr_pipeline.reduce_variables(pre_execute_dict['inputpath'])
-            #return pre_execute_dict['inputpath']
-        # elif pre_execute_dict['stage'] == "feature_reduction":
-        #     lr_pipeline.feature_reduction(pre_execute_dict['inputpath'],pre_execute_dict['outputpath'])
+        elif pre_execute_dict['stage'] == "feature_selection":
+            lr_pipeline.feature_selection(pre_execute_dict['inputpath'])
         # elif pre_execute_dict['stage'] == "model_building":
-        #     lr_pipeline.model(pre_execute_dict['inputpath'],pre_execute_dict['outputpath'])
+        #     lr_pipeline.model(pre_execute_dict['inputpath'])
         # elif pre_execute_dict['stage'] == "fine_tuning":
         #     pass
         

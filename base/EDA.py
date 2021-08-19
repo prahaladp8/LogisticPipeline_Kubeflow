@@ -1015,22 +1015,69 @@ class LogisticPipeline:
         print('End Univariate Analysis')
 
     def reduce_variables(self,input_path):
-        #read and replace pickle & load others files for the stage here
-        pkl = pd.read_pickle(input_path+'/univariate.pkl')
+        #read and replace pickle & load others files for the stage here        
+        if os.path.isfile(input_path+'/univariate.pkl'):
+            pkl = pd.read_pickle(input_path+'/univariate.pkl')
+            os.remove(input_path+'/univariate.pkl')
+        else:
+            raise ValueError('Previous Stage Pickle file not found')
         self = pkl
         #delete old pkl
         #call next set of functions
-        self.log('Begining Bivariate Analysis') 
-        print('Begining Bivariate Analysis')                 
+        self.log('Begining Bivariate & Multivariate Analysis') 
+        print('Begining Bivariate & Multivariate Analysis')                 
         self.filter_by_iv(self.training_set)
         self.build_correlation_matrix(self.training_set)
         self.getChiSquare(self.training_set, pl.DefaultInfo.default_converted_target_variable_name)
+        self.compute_vif(self.training_set)
         self.save_stage(self,pl.ExecutionStepsKey.bivariate)
         self.save_stage_kf(self,pl.ExecutionStepsKey.bivariate, input_path)
         print('End Bivariate Analysis')
 
-    def feature_reduction(self,input_path,output_path):
-        pass
+    def feature_selection(self,input_path):
+        if os.path.isfile(input_path+'/bivariate.pkl'):
+            pkl = pd.read_pickle(input_path+'/bivariate.pkl')
+            os.remove(input_path+'/bivariate.pkl')
+        else:
+            raise ValueError('Previous Stage Pickle file not found')
+        self = pkl
+        #call next set of functions
+        self.log('Begining Feature Selection') 
+        print('Begining Feature Selection') 
+        shorlisted_features = self.final_feature_set
+        #Stepwise / Lasso etc / Fw / Bk 
+        shorlisted_features = self.final_feature_set
+        shorlisted_features.append(ExecutionStepInputs.TARGET_VARIABLE)
+        self.training_set[ExecutionStepInputs.TARGET_VARIABLE] = self.training_set[ExecutionStepInputs.TARGET_VARIABLE].replace(['Level0'],0.0)
+        self.training_set[ExecutionStepInputs.TARGET_VARIABLE] = self.training_set[ExecutionStepInputs.TARGET_VARIABLE].replace(['level1'],1.0)
+        self.testing_set[ExecutionStepInputs.TARGET_VARIABLE] = self.testing_set[ExecutionStepInputs.TARGET_VARIABLE].replace(['Level0'],0.0)
+        self.testing_set[ExecutionStepInputs.TARGET_VARIABLE] = self.testing_set[ExecutionStepInputs.TARGET_VARIABLE].replace(['level1'],1.0)
+
+        if(not(self.oot_set is None)):
+            self.oot_set[ExecutionStepInputs.TARGET_VARIABLE] = self.oot_set[ExecutionStepInputs.TARGET_VARIABLE].replace(['Level0'],0.0)
+            self.oot_set[ExecutionStepInputs.TARGET_VARIABLE] = self.oot_set[ExecutionStepInputs.TARGET_VARIABLE].replace(['level1'],1.0)
+
+        if(not(self.validate_set is None)):
+            self.validate_set[ExecutionStepInputs.TARGET_VARIABLE] = self.validate_set[ExecutionStepInputs.TARGET_VARIABLE].replace(['Level0'],0.0)
+            self.validate_set[ExecutionStepInputs.TARGET_VARIABLE] = self.validate_set[ExecutionStepInputs.TARGET_VARIABLE].replace(['level1'],1.0)
+            
+        result_variables = feature_selector_model(data = self.training_set[shorlisted_features].copy(), 
+            target = ExecutionStepInputs.TARGET_VARIABLE, numerical_feat_process = None, numerical_feat_missing = ExecutionStepInputs.EMPTY_NUMERIC_VALUE_REPLACEMENT, 
+                    category_feat_process = 'woe', category_feat_missing= ExecutionStepInputs.EMPTY_CATEGORICAL_VALUE_REPLACEMENT, 
+                    method = ExecutionStepInputs.FEATURE_SELECTION_METHOD) 
+
+        feature_selection_result = result_variables['selected_features']
+        self.log('Based on {} algorithm, the most significant features are {}'.format(ExecutionStepInputs.FEATURE_SELECTION_METHOD,feature_selection_result))
+        self.final_feature_set = feature_selection_result
+        '''if(not self.oot_set.empty):
+            self.compute_csi(self.training_set[feature_selection_result],self.oot_set[feature_selection_result])
+        else:
+            self.log('Skipping CSI computation as OOT dataset not provided')'''
+        self.save_stage(self,pl.ExecutionStepsKey.feature_reduction)
+        self.save_stage_kf(self,pl.ExecutionStepsKey.feature_reduction, input_path)
+        print('End Feature Selection') 
+          
+
 
 if __name__=='__main__':
     LogisticPipeline_obj = LogisticPipeline("","","","")    
