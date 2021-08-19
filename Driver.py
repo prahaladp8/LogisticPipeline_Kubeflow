@@ -18,7 +18,8 @@ def pre_execute():
     inputpath = args.inputpath
     stage = args.stage
     #outputpath = args.outputpath
-
+    print(inputpath)
+    print(stage)
     #Temp inputs dir
     if not os.path.exists(os.getcwd()+'/inputs'):
         os.mkdir(os.getcwd()+'/inputs')
