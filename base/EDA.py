@@ -1077,7 +1077,52 @@ class LogisticPipeline:
         self.save_stage_kf(self,pl.ExecutionStepsKey.feature_reduction, input_path)
         print('End Feature Selection') 
           
+    def model_building(self,input_path):
+        pkl = pd.read_pickle(input_path+'/feature_reduction.pkl')
+        self = pkl
+        
+        self.log('Begining Model Building')
+        print('Begining Model Building')
+        
+        shorlisted_features = self.final_feature_set
 
+        grid_param = { 
+            'classifier__C' : np.logspace(-3, 1, 5),
+            'classifier__penalty' : ['l1', 'l2', 'elasticnet', 'none'],
+            'classifier__solver' : ['lbfgs','newton-cg','liblinear','sag','saga'],
+            'classifier__max_iter' : [100, 1000, 2500, 5000]
+        }
+        
+        result_model_pipelines = create_bin_model(data = self.training_set.copy(), target = ExecutionStepInputs.TARGET_VARIABLE, 
+            variableset = self.final_feature_set, val_set = None, 
+            get_Logit_summary = True ,penalty = 'l1', param_grid = grid_param,
+            tune_hyperparams = False, risk_band_count = ExecutionStepInputs.RISK_BAND_COUNT)
+        
+        bins_info = self.get_bin_info(result_model_pipelines['model_bins'])
+        risk_bands =  result_model_pipelines['pd_risk_bands']
+        with open(pl.DefaultInfo.default_staging_location+"/model_preprocessor.pkl", 'wb') as file:
+            pickle.dump(result_model_pipelines, file)
+
+        with open(pl.DefaultInfo.default_staging_location+"/woe_bins.pkl", 'wb') as file:
+            pickle.dump(bins_info, file)
+
+        self.convert_df_to_html(bins_info,self.pipeline_configuration['reports_directory'],'Var.Bins',hide_index=True)
+        self.convert_df_to_html(risk_bands,self.pipeline_configuration['reports_directory'],'Risk Bands')
+            
+        self.log('Result Model Pipeline - ')
+        self.log(result_model_pipelines['model_pipeline'])
+
+        firstcut_model = self.pipeline_configuration['model_directory']+"/first_cut_model.pkl"
+
+        with open(firstcut_model, 'wb') as file:
+            pickle.dump(result_model_pipelines['model_pipeline'], file)
+        
+        reports = Reporting(self.training_set,self.testing_set,self.validate_set,self.oot_set,None)
+        reports.generate_reports()
+        
+        self.save_stage(self,pl.ExecutionStepsKey.model_building)
+        self.save_stage_kf(self,pl.ExecutionStepsKey.model_building,input_path)
+        print('End Model Building')    
 
 if __name__=='__main__':
     LogisticPipeline_obj = LogisticPipeline("","","","")    
