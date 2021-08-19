@@ -982,9 +982,8 @@ class LogisticPipeline:
             pickle.dump(df, file)
 
     def save_stage_kf(self,df,stage,container_output_path):
-        #pkl_filename = container_output_path
-        #+"/"+stage+".pkl"
-        with open(container_output_path, 'wb') as file:
+        pkl_filename = container_output_path +"/"+stage+".pkl"
+        with open(pkl_filename, 'wb') as file:
             pickle.dump(df, file)
         #df.to_pickle(container_output_path)
 
@@ -1004,7 +1003,7 @@ class LogisticPipeline:
         bins_info = bins_info[['feature','index','count','min']]     
         return bins_info
 
-    def prepare_data(self,output_path):
+    def prepare_data(self,inputpath):
         self.log('Begining Univariate Analysis')
         print('Begining Univariate Analysis')
         self.initialize_pipeline()
@@ -1012,14 +1011,14 @@ class LogisticPipeline:
         self.drop_missing_values()
         self.replace_missing_value()          
         self.save_stage(self,pl.ExecutionStepsKey.univariate)
-        self.save_stage_kf(self,pl.ExecutionStepsKey.univariate, output_path)
+        self.save_stage_kf(self,pl.ExecutionStepsKey.univariate,inputpath )
         print('End Univariate Analysis')
 
-    def reduce_variables(self,input_path,output_path):
+    def reduce_variables(self,input_path):
         #read and replace pickle & load others files for the stage here
-        pkl = pd.read_pickle(input_path)
-        #+'/univariate.pkl')
+        pkl = pd.read_pickle(input_path+'/univariate.pkl')
         self = pkl
+        #delete old pkl
         #call next set of functions
         self.log('Begining Bivariate Analysis') 
         print('Begining Bivariate Analysis')                 
@@ -1027,7 +1026,7 @@ class LogisticPipeline:
         self.build_correlation_matrix(self.training_set)
         self.getChiSquare(self.training_set, pl.DefaultInfo.default_converted_target_variable_name)
         self.save_stage(self,pl.ExecutionStepsKey.bivariate)
-        self.save_stage_kf(self,pl.ExecutionStepsKey.bivariate, output_path)
+        self.save_stage_kf(self,pl.ExecutionStepsKey.bivariate, input_path)
         print('End Bivariate Analysis')
 
     def feature_reduction(self,input_path,output_path):

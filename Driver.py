@@ -11,13 +11,13 @@ def pre_execute():
     parser = argparse.ArgumentParser(description='Reading command line arguments for Pipeline')
     parser.add_argument('--inputpath', type=str, help='Input dir')
     parser.add_argument('--stage', type=str, help='Stage to be executed')
-    parser.add_argument('--outputpath', type=str, help='Output dir each component')
+    #parser.add_argument('--outputpath', type=str, help='Output dir each component')
     args = parser.parse_args()
 
     print('***** Preprocessing data for the Pipeline ******')
     inputpath = args.inputpath
     stage = args.stage
-    outputpath = args.outputpath
+    #outputpath = args.outputpath
 
     #Temp inputs dir
     if not os.path.exists(os.getcwd()+'/inputs'):
@@ -30,32 +30,24 @@ def pre_execute():
     #if not os.path.exists(outputpath):
     #    os.mkdir(outputpath)
     
-    os.makedirs(os.path.dirname(outputpath))
+    #os.makedirs(os.path.dirname(outputpath))
         
 
     #Actual Data folder
     if not os.path.exists(os.getcwd()+'/base/Data'):
         os.mkdir(os.getcwd()+'/base/Data')
 
-    print(outputpath)
+    #print(outputpath)
     print(inputpath)
     
-    print('op is directory : '+str(os.path.isdir(outputpath)))
+    #print('op is directory : '+str(os.path.isdir(outputpath)))
     print('in is directory : '+str(os.path.isdir(inputpath)))
 
-    print('op is file : '+str(os.path.isfile(outputpath)))
+    #print('op is file : '+str(os.path.isfile(outputpath)))
     print('in is file : '+str(os.path.isfile(inputpath)))
 
-    print('op exists : '+ str( os.path.exists(outputpath)))
+    #print('op exists : '+ str( os.path.exists(outputpath)))
     print('ip exists : '+ str( os.path.exists(inputpath)))
-
-    
-    # import pandas as pd    
-    # df = pd.read_csv(inputpath)
-    # print(df.shape)
-
-    # df2 = pd.read_csv("/tmp/inputs/input_path/loan_data_2015.csv")
-    # print(df2.shape)
 
     #get 
     for items in os.listdir(os.path.realpath(r''+inputpath)):
@@ -69,10 +61,11 @@ def pre_execute():
     for item in os.listdir(os.path.realpath(r''+inputpath)):
         shutil.copy2(inputpath+'/'+item, dest_loc)
 
-    
+    print('***** End of Preprocessing data for the Pipeline ******')
     #look to accept yaml file also
     
-    return {'inputpath': inputpath,'stage': stage,'outputpath':outputpath} 
+    return {'inputpath': inputpath,'stage': stage #,'outputpath':outputpath
+    } 
 
 
 if __name__ == '__main__':
@@ -81,9 +74,11 @@ if __name__ == '__main__':
         lr_pipeline = eda.LogisticPipeline('','','','')
         lr_pipeline.prepare_pipeline()
         if pre_execute_dict['stage'] == "prepare_data":
-            lr_pipeline.prepare_data(pre_execute_dict['outputpath'])
+            lr_pipeline.prepare_data(pre_execute_dict['inputpath'])
+            #return pre_execute_dict['inputpath']
         elif pre_execute_dict['stage'] == "variable_reduction":
-            lr_pipeline.reduce_variables(pre_execute_dict['inputpath'],pre_execute_dict['outputpath'])
+            lr_pipeline.reduce_variables(pre_execute_dict['inputpath'])
+            #return pre_execute_dict['inputpath']
         # elif pre_execute_dict['stage'] == "feature_reduction":
         #     lr_pipeline.feature_reduction(pre_execute_dict['inputpath'],pre_execute_dict['outputpath'])
         # elif pre_execute_dict['stage'] == "model_building":
