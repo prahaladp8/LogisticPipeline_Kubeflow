@@ -80,8 +80,8 @@ if __name__ == '__main__':
             lr_pipeline.reduce_variables(pre_execute_dict['inputpath'])
         elif pre_execute_dict['stage'] == "feature_selection":
             lr_pipeline.feature_selection(pre_execute_dict['inputpath'])
-        # elif pre_execute_dict['stage'] == "model_building":
-        #     lr_pipeline.model(pre_execute_dict['inputpath'])
+        elif pre_execute_dict['stage'] == "model_building":
+            lr_pipeline.model_building(pre_execute_dict['inputpath'])
         # elif pre_execute_dict['stage'] == "fine_tuning":
         #     pass
         
