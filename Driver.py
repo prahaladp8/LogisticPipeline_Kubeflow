@@ -3,6 +3,7 @@ import traceback
 import argparse
 import os
 import shutil
+import pandas as pd
 
 
 def pre_execute():
@@ -80,19 +81,22 @@ if __name__ == '__main__':
         lr_pipeline = eda.LogisticPipeline('','','','')
         lr_pipeline.prepare_pipeline()
         if pre_execute_dict['stage'] == "prepare_data":
-            lr_pipeline.prepare_data(os.getcwd()+'/outputs')
+            lr_pipeline.prepare_data(pre_execute_dict['outputpath'])
         elif pre_execute_dict['stage'] == "variable_reduction":
-            lr_pipeline.reduce_variables(pre_execute_dict['inputpath'],os.getcwd()+'/outputs')
-        elif pre_execute_dict['stage'] == "feature_reduction":
-            lr_pipeline.feature_reduction(pre_execute_dict['inputpath'],os.getcwd()+'/outputs')
-        elif pre_execute_dict['stage'] == "model_building":
-            lr_pipeline.model(pre_execute_dict['inputpath'],os.getcwd()+'/outputs')
-        elif pre_execute_dict['stage'] == "fine_tuning":
-            pass
+            lr_pipeline.reduce_variables(pre_execute_dict['inputpath'],pre_execute_dict['outputpath'])
+        # elif pre_execute_dict['stage'] == "feature_reduction":
+        #     lr_pipeline.feature_reduction(pre_execute_dict['inputpath'],pre_execute_dict['outputpath'])
+        # elif pre_execute_dict['stage'] == "model_building":
+        #     lr_pipeline.model(pre_execute_dict['inputpath'],pre_execute_dict['outputpath'])
+        # elif pre_execute_dict['stage'] == "fine_tuning":
+        #     pass
         
-        local_output_loc = os.getcwd()+'/outputs'
-        for item in os.listdir(local_output_loc):
-           shutil.copy2(local_output_loc+'/'+item, pre_execute_dict['outputpath'])
+        #local_output_loc = os.getcwd()+'/outputs'
+        #for item in os.listdir(local_output_loc):
+        #   shutil.copy2(local_output_loc+'/'+item, pre_execute_dict['outputpath'])
+
+#       with open(pre_execute_dict['outputpath'],'wb') as opath:
+#            pd.to_pickle(file,opath)
 
     except Exception as e:
         print(e)

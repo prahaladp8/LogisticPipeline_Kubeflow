@@ -982,10 +982,11 @@ class LogisticPipeline:
             pickle.dump(df, file)
 
     def save_stage_kf(self,df,stage,container_output_path):
-        pkl_filename = container_output_path
+        #pkl_filename = container_output_path
         #+"/"+stage+".pkl"
-        with open(pkl_filename, 'wb') as file:
-            pickle.dump(df, file)
+        #with open(os.path.dirname(container_output_path), 'wb') as file:
+        #    pickle.dump(df, file)
+        df.to_pickle(container_output_path)
 
     def get_bin_info(self,data):
         df = {}
