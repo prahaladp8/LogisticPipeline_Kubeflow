@@ -799,10 +799,10 @@ class LogisticPipeline:
             reports.generate_reports()
             results = reports.get_mlflow_metrics()
             
-            self.log_mlflow_items()
-            mlflow.sklearn.log_model(result_model_pipelines,pl.DefaultInfo.default_model_path)            
-            mlflow.log_metric("KS",results['KS_Test']) 
-            mlflow.log_metric("AUC",results['AUC_Test'])
+            #self.log_mlflow_items()
+            #mlflow.sklearn.log_model(result_model_pipelines,pl.DefaultInfo.default_model_path)            
+            #mlflow.log_metric("KS",results['KS_Test']) 
+            #mlflow.log_metric("AUC",results['AUC_Test'])
             print('End Model Building')
         if(self.execution_steps[pl.ExecutionStepsKey.fine_tuning]):
             #print(self.training_set[TARGET_VARIABLE].unique())
@@ -1129,7 +1129,22 @@ class LogisticPipeline:
  
         reports = Reporting(self.training_set,self.testing_set,self.validate_set,self.oot_set,None)
         reports.generate_reports()
+
+        results = reports.get_mlflow_metrics()
         
+        import json
+
+        with open(input_path+'/results.json', 'w') as fp:
+            json.dump(results, fp)
+
+        with open(input_path+'/config.json', 'w') as fp:
+            json.dump(self.pipeline_configuration, fp)
+    
+        mlflow.sklearn.log_model(result_model_pipelines,pl.DefaultInfo.default_model_path)           
+        mlflow.log_metric("KS",results['KS_Test']) 
+        mlflow.log_metric("AUC",results['AUC_Test'])
+
+
         print('End Model Building')    
 
 if __name__=='__main__':
