@@ -185,12 +185,12 @@ class LogisticPipeline:
         self.oot_set = transformed_data['OOT']        
         self.validate_set = transformed_data['PDV']
         
-        # self.training_set = self.training_set.sample(frac=0.1)      #Comment
-        # self.training_set = self.training_set.reset_index()         #Comment
-        # self.testing_set = self.testing_set.sample(frac=0.1)         #Comment    
-        # self.testing_set = self.testing_set.reset_index()         #Comment
-        # self.oot_set = self.oot_set.sample(frac=0.1)         #Comment    
-        # self.oot_set = self.oot_set.reset_index()         #Comment
+        self.training_set = self.training_set.sample(frac=0.1)      #Comment
+        self.training_set = self.training_set.reset_index()         #Comment
+        self.testing_set = self.testing_set.sample(frac=0.1)         #Comment    
+        self.testing_set = self.testing_set.reset_index()         #Comment
+        self.oot_set = self.oot_set.sample(frac=0.1)         #Comment    
+        self.oot_set = self.oot_set.reset_index()         #Comment
         
         self.final_feature_set = self.training_set.columns.tolist()
         self.setup_defaults()
