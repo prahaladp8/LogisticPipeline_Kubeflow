@@ -381,7 +381,7 @@ def plot_bads(bins, total_list_oot, badrate_list_oot,source,feature,location='te
     #fig.tight_layout()
     #plt.show()
     #CHECK
-    path = os.getcwd()+ '/base/temp/images/'+ feature + '-'+source+'.png'
+    path = os.getcwd()+ '/base/temp/img/'+ feature + '-'+source+'.png'
     plt.savefig(path)
     plt.clf()
 
