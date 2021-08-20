@@ -1078,7 +1078,13 @@ class LogisticPipeline:
         print('End Feature Selection') 
           
     def model_building(self,input_path):
-        pkl = pd.read_pickle(input_path+'/feature_reduction.pkl')
+        
+        if os.path.isfile(input_path+'/feature_reduction.pkl'):
+            pkl = pd.read_pickle(input_path+'/feature_reduction.pkl')
+            os.remove(input_path+'/feature_reduction.pkl')
+        else:
+            raise ValueError('Previous Stage Pickle file not found')
+
         self = pkl
         
         self.log('Begining Model Building')
@@ -1140,13 +1146,6 @@ class LogisticPipeline:
         with open(input_path+'/config.json', 'w', encoding='utf-8') as fp:
             json.dump(self.pipeline_configuration, fp)
 
-
-        with open(input_path+'/results1.json', 'wb') as fp:
-            json.dump(results, fp)
-
-        with open(input_path+'/config1.json', 'wb') as fp:
-            json.dump(self.pipeline_configuration, fp)
-    
     
         # mlflow.sklearn.log_model(result_model_pipelines,pl.DefaultInfo.default_model_path)           
         # mlflow.log_metric("KS",results['KS_Test']) 
@@ -1154,6 +1153,9 @@ class LogisticPipeline:
 
 
         print('End Model Building')    
+
+    def model_fine_tuning(self,input_path):
+        pass
 
 if __name__=='__main__':
     LogisticPipeline_obj = LogisticPipeline("","","","")    

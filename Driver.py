@@ -54,13 +54,24 @@ def pre_execute():
     for items in os.listdir(os.path.realpath(r''+inputpath)):
         print(items)
 
-    dest_loc = os.getcwd()+'/inputs'
+    #dest_loc = os.getcwd()+'/inputs'
     for item in os.listdir(os.path.realpath(r''+inputpath)):
-        shutil.copy2(inputpath+'/'+item, dest_loc)
+        if item.endswith("PipelineInputs.yml"):
+            if os.path.exists(os.getcwd()+"/base/PipelineInputs.yml"):
+                os.remove(os.getcwd()+"/base/"+item)
+            shutil.copy2(inputpath+'/'+item, os.getcwd()+"/base/" )    
+        elif item.endswith("Fine_Tuning_Inputs.py"):
+            if os.path.exists(os.getcwd()+"/base/Fine_Tuning_Inputs.py"):
+                os.remove(os.getcwd()+"/base/"+item)
+            shutil.copy2(inputpath+'/'+item, os.getcwd()+"/base/" )    
+        elif item.endswith(".csv"):
+            shutil.copy2(inputpath+'/'+item, os.getcwd()+'/base/Data')
+            
+        #shutil.copy2(inputpath+'/'+item, dest_loc)
 
-    dest_loc = os.getcwd()+'/base/Data'
-    for item in os.listdir(os.path.realpath(r''+inputpath)):
-        shutil.copy2(inputpath+'/'+item, dest_loc)
+    # dest_loc = os.getcwd()+'/base/Data'
+    # for item in os.listdir(os.path.realpath(r''+inputpath)):
+    #     shutil.copy2(inputpath+'/'+item, dest_loc)
 
     print('***** End of Preprocessing data for the Pipeline ******')
     #look to accept yaml file also
@@ -82,15 +93,12 @@ if __name__ == '__main__':
             lr_pipeline.feature_selection(pre_execute_dict['inputpath'])
         elif pre_execute_dict['stage'] == "model_building":
             lr_pipeline.model_building(pre_execute_dict['inputpath'])
-        # elif pre_execute_dict['stage'] == "fine_tuning":
-        #     pass
+        elif pre_execute_dict['stage'] == "fine_tuning":
+            lr_pipeline.model_fine_tuning(pre_execute_dict['inputpath'])
         
-        #local_output_loc = os.getcwd()+'/outputs'
-        #for item in os.listdir(local_output_loc):
-        #   shutil.copy2(local_output_loc+'/'+item, pre_execute_dict['outputpath'])
-
-#       with open(pre_execute_dict['outputpath'],'wb') as opath:
-#            pd.to_pickle(file,opath)
+        reports_dir = os.getcwd()+"/base/Reports/Post_Train_Model_Report.xlsx"
+        if os.path.exists(reports_dir):
+            shutil.copy2(reports_dir, pre_execute_dict['inputpath'])
 
     except Exception as e:
         print(e)
