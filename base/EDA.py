@@ -1121,14 +1121,15 @@ class LogisticPipeline:
             pickle.dump(result_model_pipelines, file)
 
         kf_loc = input_path + "/first_cut_model.pkl"
-        with open(firstcut_model, 'wb') as file:
+        with open(kf_loc, 'wb') as file:
             pickle.dump(result_model_pipelines['model_pipeline'], file)
 
+        self.save_stage(self,pl.ExecutionStepsKey.model_building)
+        self.save_stage_kf(self,pl.ExecutionStepsKey.model_building,input_path)
+ 
         reports = Reporting(self.training_set,self.testing_set,self.validate_set,self.oot_set,None)
         reports.generate_reports()
         
-        self.save_stage(self,pl.ExecutionStepsKey.model_building)
-        self.save_stage_kf(self,pl.ExecutionStepsKey.model_building,input_path)
         print('End Model Building')    
 
 if __name__=='__main__':
