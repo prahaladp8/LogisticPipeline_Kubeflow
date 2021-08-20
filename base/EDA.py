@@ -1134,15 +1134,15 @@ class LogisticPipeline:
         
         import json
 
-        with open(input_path+'/results.json', 'w') as fp:
+        with open(input_path+'/results.json', 'wb') as fp:
             json.dump(results, fp)
 
-        with open(input_path+'/config.json', 'w') as fp:
+        with open(input_path+'/config.json', 'wb') as fp:
             json.dump(self.pipeline_configuration, fp)
     
-        mlflow.sklearn.log_model(result_model_pipelines,pl.DefaultInfo.default_model_path)           
-        mlflow.log_metric("KS",results['KS_Test']) 
-        mlflow.log_metric("AUC",results['AUC_Test'])
+        # mlflow.sklearn.log_model(result_model_pipelines,pl.DefaultInfo.default_model_path)           
+        # mlflow.log_metric("KS",results['KS_Test']) 
+        # mlflow.log_metric("AUC",results['AUC_Test'])
 
 
         print('End Model Building')    
