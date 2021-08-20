@@ -44,10 +44,10 @@ class Reporting:
     def generate_reports(self):
         #Start
         #TODO Change data
-        temp_obj  = pd.read_pickle(os.getcwd()+'/base/'+'data/model_building.pkl')   #TODO Look to replace
+        temp_obj  = pd.read_pickle(os.getcwd()+'/base/inputs/'+'model_building.pkl')   #TODO Look to replace
         #checks on oot & pdv TODO
         #checks on preprocessor.pkl TODO
-        model_obj = pd.read_pickle(os.getcwd()+'/base/'+'data/model_preprocessor.pkl')  #TODO Look to replace
+        model_obj = pd.read_pickle(os.getcwd()+'/base/inputs/'+'model_preprocessor.pkl')  #TODO Look to replace
         test_data = temp_obj.testing_set
         #pd.read_csv('temp/test-binned-result.csv')#Comment
         oot_data = temp_obj.oot_set
