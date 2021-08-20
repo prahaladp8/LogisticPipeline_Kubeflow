@@ -49,13 +49,13 @@ def pre_execute():
 
     #print('op exists : '+ str( os.path.exists(outputpath)))
     print('ip exists : '+ str( os.path.exists(inputpath)))
-
-    #get 
-    for items in os.listdir(os.path.realpath(r''+inputpath)):
-        print(items)
+ 
+    # for items in os.listdir(os.path.realpath(r''+inputpath)):
+    #     print(items)
 
     #dest_loc = os.getcwd()+'/inputs'
     for item in os.listdir(os.path.realpath(r''+inputpath)):
+        print(inputpath+'/'+item)
         if item.endswith("PipelineInputs.yml"):
             if os.path.exists(os.getcwd()+"/base/PipelineInputs.yml"):
                 os.remove(os.getcwd()+"/base/"+item)
