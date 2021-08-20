@@ -1134,10 +1134,10 @@ class LogisticPipeline:
         
         import json
 
-        with open(input_path+'/results.json', 'wb') as fp:
+        with open(input_path+'/results.json', 'w', encoding='utf-8') as fp:
             json.dump(results, fp)
 
-        with open(input_path+'/config.json', 'wb') as fp:
+        with open(input_path+'/config.json', 'w', encoding='utf-8') as fp:
             json.dump(self.pipeline_configuration, fp)
     
         # mlflow.sklearn.log_model(result_model_pipelines,pl.DefaultInfo.default_model_path)           
