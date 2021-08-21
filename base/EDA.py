@@ -1155,7 +1155,89 @@ class LogisticPipeline:
         print('End Model Building')    
 
     def model_fine_tuning(self,input_path):
-        pass
+
+        if os.path.isfile(input_path+'/model_building.pkl'):
+            pkl = pd.read_pickle(input_path+'/model_building.pkl')
+            os.remove(input_path+'/model_building.pkl')
+        else:
+            raise ValueError('Previous Stage Pickle file not found')
+
+        self = pkl
+        
+        self.log('Begining Fine Tuning')
+        print('Begining Fine Tuning')
+        
+        self.training_set[ExecutionStepInputs.TARGET_VARIABLE] = self.training_set[ExecutionStepInputs.TARGET_VARIABLE].replace(['Level0'],0.0)
+        self.training_set[ExecutionStepInputs.TARGET_VARIABLE] = self.training_set[ExecutionStepInputs.TARGET_VARIABLE].replace(['level1'],1.0)  
+
+        self.testing_set[ExecutionStepInputs.TARGET_VARIABLE] = self.testing_set[ExecutionStepInputs.TARGET_VARIABLE].replace(['Level0'],0.0)
+        self.testing_set[ExecutionStepInputs.TARGET_VARIABLE] = self.testing_set[ExecutionStepInputs.TARGET_VARIABLE].replace(['level1'],1.0)
+        
+        #np.where(self.training_set[ExecutionStepInputs.TARGET_VARIABLE].isin(['Level0']),0.0,1.0)
+        #self.testing_set[ExecutionStepInputs.TARGET_VARIABLE] = np.where(self.testing_set[ExecutionStepInputs.TARGET_VARIABLE].isin(['Level0']),0.0,1.0)
+        
+        if(not(self.oot_set is None)):
+            self.oot_set[ExecutionStepInputs.TARGET_VARIABLE] = self.oot_set[ExecutionStepInputs.TARGET_VARIABLE].replace(['Level0'],0.0)
+            self.oot_set[ExecutionStepInputs.TARGET_VARIABLE] = self.oot_set[ExecutionStepInputs.TARGET_VARIABLE].replace(['level1'],1.0)
+
+        if(not(self.validate_set is None)):
+            self.validate_set[ExecutionStepInputs.TARGET_VARIABLE] = self.validate_set[ExecutionStepInputs.TARGET_VARIABLE].replace(['Level0'],0.0)
+            self.validate_set[ExecutionStepInputs.TARGET_VARIABLE] = self.validate_set[ExecutionStepInputs.TARGET_VARIABLE].replace(['level1'],1.0)
+
+        #Reading pickle file before executing the model            
+        if(self is None):
+            raise ValueError('Model Building Pickle file not found in temp directory! Train Model first before fine tuning it!')
+
+        #pickle_file.training_set[ExecutionStepInputs.TARGET_VARIABLE].iloc[60:100] = 1.0  #Comment Out
+        #pickle_file.training_set[ExecutionStepInputs.TARGET_VARIABLE].iloc[8:50] = 0.0  #Comment Out
+            
+        result_model_pipelines = RefineBSModel(data =  self.training_set.copy() , 
+                         target = pl.DefaultInfo.default_converted_target_variable_name,
+                          variableset = fti.variableset , category_feat_missing = ExecutionStepInputs.EMPTY_CATEGORICAL_VALUE_REPLACEMENT, 
+                           numeric_trasformations = fti.numeric_transformations , 
+                            numeric_bining = fti.numeric_bining , custom_binning = fti.custom_bins , 
+                           categorical_grouping = fti.categorical_grouping, 
+                          get_Logit_summary = fti.get_Logit_summary, 
+                         penalty = 'l1', tune_hyperparams = False, param_grid = None, get_summary_report = True, 
+                            risk_band_count = ExecutionStepInputs.RISK_BAND_COUNT, custom_risk_bands = fti.custom_risk_bands)
+                
+        bins_info = self.get_bin_info(result_model_pipelines['model_bins'])
+            
+        with open(pl.DefaultInfo.default_staging_location+"/model_preprocessor.pkl", 'wb') as file:
+            pickle.dump(result_model_pipelines, file)
+    
+        #predictions = RefineBSPredictions(test_data = self.testing_set.copy(), result_model_pipeline = refinedResults)
+            
+        self.log('Fine Tuning Result : Model Info')
+        self.log(result_model_pipelines['model_pipeline'])
+
+        firstcut_model = self.pipeline_configuration['model_directory']+"/first_cut_model.pkl"
+
+        with open(firstcut_model, 'wb') as file:
+            pickle.dump(result_model_pipelines['model_pipeline'], file)
+
+        #TODO Test
+        
+        #self.save_stage(self,pl.ExecutionStepsKey.model_building)         
+        reports = Reporting(self.training_set,self.testing_set,self.validate_set,self.oot_set,None,fine_tuneing=True)
+        reports.generate_reports()
+
+        results = reports.get_mlflow_metrics()
+        
+        import json
+
+        with open(input_path+'/results.json', 'w', encoding='utf-8') as fp:
+            json.dump(results, fp)
+
+        with open(input_path+'/config.json', 'w', encoding='utf-8') as fp:
+            json.dump(self.pipeline_configuration, fp)
+
+        
+        self.save_stage(self,pl.ExecutionStepsKey.model_refining)
+        self.save_stage_kf(self,pl.ExecutionStepsKey.model_refining,input_path)
+        
+        print('End Fine Tuning')
+
 
 if __name__=='__main__':
     LogisticPipeline_obj = LogisticPipeline("","","","")    
