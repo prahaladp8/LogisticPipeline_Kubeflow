@@ -228,6 +228,7 @@ class LogisticPipeline:
         #print(self.features_dict)
 
     def log(self,msg):
+        print(msg)
         self.log_steps.append(msg)
         self.log_steps.append('\n')
 
@@ -1005,14 +1006,15 @@ class LogisticPipeline:
 
     def prepare_data(self,inputpath):
         self.log('Begining Univariate Analysis')
-        print('Begining Univariate Analysis')
+        #print('Begining Univariate Analysis')
         self.initialize_pipeline()
         self.describe_variables()
         self.drop_missing_values()
         self.replace_missing_value()          
         self.save_stage(self,pl.ExecutionStepsKey.univariate)
         self.save_stage_kf(self,pl.ExecutionStepsKey.univariate,inputpath )
-        print('End Univariate Analysis')
+        self.log('End Univariate Analysis')
+        #print('End Univariate Analysis')
 
     def reduce_variables(self,input_path):
         #read and replace pickle & load others files for the stage here        
@@ -1025,7 +1027,7 @@ class LogisticPipeline:
         #delete old pkl
         #call next set of functions
         self.log('Begining Bivariate & Multivariate Analysis') 
-        print('Begining Bivariate & Multivariate Analysis')                 
+        #print('Begining Bivariate & Multivariate Analysis')                 
         self.filter_by_iv(self.training_set)
         self.build_correlation_matrix(self.training_set)
         self.getChiSquare(self.training_set, pl.DefaultInfo.default_converted_target_variable_name)
@@ -1033,7 +1035,8 @@ class LogisticPipeline:
         self.save_stage(self,pl.ExecutionStepsKey.bivariate)
         self.save_stage_kf(self,pl.ExecutionStepsKey.bivariate, input_path)
         print('End Bivariate Analysis')
-
+        self.log('End Bivariate Analysis') 
+        
     def feature_selection(self,input_path):
         if os.path.isfile(input_path+'/bivariate.pkl'):
             pkl = pd.read_pickle(input_path+'/bivariate.pkl')
@@ -1043,7 +1046,7 @@ class LogisticPipeline:
         self = pkl
         #call next set of functions
         self.log('Begining Feature Selection') 
-        print('Begining Feature Selection') 
+        #print('Begining Feature Selection') 
         shorlisted_features = self.final_feature_set
         #Stepwise / Lasso etc / Fw / Bk 
         shorlisted_features = self.final_feature_set
@@ -1075,7 +1078,8 @@ class LogisticPipeline:
             self.log('Skipping CSI computation as OOT dataset not provided')'''
         self.save_stage(self,pl.ExecutionStepsKey.feature_reduction)
         self.save_stage_kf(self,pl.ExecutionStepsKey.feature_reduction, input_path)
-        print('End Feature Selection') 
+        self.log('End Feature Selection')
+        #print('End Feature Selection') 
           
     def model_building(self,input_path):
         
@@ -1088,7 +1092,7 @@ class LogisticPipeline:
         self = pkl
         
         self.log('Begining Model Building')
-        print('Begining Model Building')
+        #print('Begining Model Building')
         
         shorlisted_features = self.final_feature_set
 
@@ -1127,7 +1131,7 @@ class LogisticPipeline:
         with open(kf_loc, 'wb') as file:
             pickle.dump(result_model_pipelines, file)
 
-        kf_loc = input_path + "/first_cut_model.pkl"
+        kf_loc = input_path + "/model_pipeline.pkl"
         with open(kf_loc, 'wb') as file:
             pickle.dump(result_model_pipelines['model_pipeline'], file)
 
@@ -1153,7 +1157,7 @@ class LogisticPipeline:
         # mlflow.log_metric("AUC",results['AUC_Test'])
 
 
-        print('End Model Building')    
+        #print('End Model Building')    
 
     def model_fine_tuning(self,input_path):
 
@@ -1166,7 +1170,7 @@ class LogisticPipeline:
         self = pkl
         
         self.log('Begining Fine Tuning')
-        print('Begining Fine Tuning')
+        #print('Begining Fine Tuning')
         
         self.training_set[ExecutionStepInputs.TARGET_VARIABLE] = self.training_set[ExecutionStepInputs.TARGET_VARIABLE].replace(['Level0'],0.0)
         self.training_set[ExecutionStepInputs.TARGET_VARIABLE] = self.training_set[ExecutionStepInputs.TARGET_VARIABLE].replace(['level1'],1.0)  
@@ -1217,8 +1221,8 @@ class LogisticPipeline:
         with open(firstcut_model, 'wb') as file:
             pickle.dump(result_model_pipelines['model_pipeline'], file)
 
-        firstcut_model = input_path+"/refined_model.pkl"
-        with open(firstcut_model, 'wb') as file:
+        kf_loc = input_path + "/model_pipeline.pkl"
+        with open(kf_loc, 'wb') as file:
             pickle.dump(result_model_pipelines['model_pipeline'], file)
 
 
@@ -1241,8 +1245,8 @@ class LogisticPipeline:
         
         self.save_stage(self,pl.ExecutionStepsKey.fine_tuning)
         self.save_stage_kf(self,pl.ExecutionStepsKey.fine_tuning,input_path)
-        
-        print('End Fine Tuning')
+        self.log('End Fine Tuning') 
+        #print('End Fine Tuning')
 
 
 
@@ -1259,7 +1263,7 @@ if __name__=='__main__':
     finally:
         LogisticPipeline_obj.write_log()
 
-def exeute():
+def execute():
     LogisticPipeline_obj = LogisticPipeline("","","","")    
     try:
         LogisticPipeline_obj.log('Start')        

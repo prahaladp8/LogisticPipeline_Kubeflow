@@ -63,10 +63,16 @@ def pre_execute():
         elif item.endswith("Fine_Tuning_Inputs.py"):
             if os.path.exists(os.getcwd()+"/base/Fine_Tuning_Inputs.py"):
                 os.remove(os.getcwd()+"/base/"+item)
-            shutil.copy2(inputpath+'/'+item, os.getcwd()+"/base/" )    
+            shutil.copy2(inputpath+'/'+item, os.getcwd()+"/base/" )
         elif item.endswith(".csv"):
             shutil.copy2(inputpath+'/'+item, os.getcwd()+'/base/Data')
-            
+
+    for item in os.listdir(os.path.realpath(r''+inputpath+'/Reports')):
+        if item.endswith("Pre_Train_Report.xlsx"):
+            if os.path.exists(os.getcwd()+"/base/Reports/Pre_Train_Report.xlsx.py"):
+                os.remove(os.getcwd()+"/base/"+item)
+            shutil.copy2(inputpath+'/'+item, os.getcwd()+"/base/" )
+
         #shutil.copy2(inputpath+'/'+item, dest_loc)
 
     # dest_loc = os.getcwd()+'/base/Data'
