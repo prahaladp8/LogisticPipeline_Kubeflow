@@ -1106,7 +1106,7 @@ class LogisticPipeline:
         
         bins_info = self.get_bin_info(result_model_pipelines['model_bins'])
         risk_bands =  result_model_pipelines['pd_risk_bands']
-        
+
         with open(os.getcwd()+'/base/'+pl.DefaultInfo.default_staging_location+"/model_preprocessor.pkl", 'wb') as file:
             pickle.dump(result_model_pipelines, file)
 
@@ -1159,7 +1159,7 @@ class LogisticPipeline:
 
         if os.path.isfile(input_path+'/model_building.pkl'):
             pkl = pd.read_pickle(input_path+'/model_building.pkl')
-            os.remove(input_path+'/model_building.pkl')
+            #os.remove(input_path+'/model_building.pkl')
         else:
             raise ValueError('Previous Stage Pickle file not found')
 
@@ -1239,8 +1239,8 @@ class LogisticPipeline:
             json.dump(self.pipeline_configuration, fp)
 
         
-        self.save_stage(self,pl.ExecutionStepsKey.model_refining)
-        self.save_stage_kf(self,pl.ExecutionStepsKey.model_refining,input_path)
+        self.save_stage(self,pl.ExecutionStepsKey.fine_tuning)
+        self.save_stage_kf(self,pl.ExecutionStepsKey.fine_tuning,input_path)
         
         print('End Fine Tuning')
 
