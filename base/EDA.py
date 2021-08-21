@@ -1106,6 +1106,7 @@ class LogisticPipeline:
         
         bins_info = self.get_bin_info(result_model_pipelines['model_bins'])
         risk_bands =  result_model_pipelines['pd_risk_bands']
+        
         with open(os.getcwd()+'/base/'+pl.DefaultInfo.default_staging_location+"/model_preprocessor.pkl", 'wb') as file:
             pickle.dump(result_model_pipelines, file)
 

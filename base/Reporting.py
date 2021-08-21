@@ -44,7 +44,7 @@ class Reporting:
     def generate_reports(self):
         #Start
         #TODO Change data
-        temp_obj  = pd.read_pickle(os.getcwd()+'/base/temp/'+'model_building.pkl')   #TODO Look to replace
+        #temp_obj  = pd.read_pickle(os.getcwd()+'/base/temp/'+'model_building.pkl')   #TODO Look to replace
         #checks on oot & pdv TODO
         #checks on preprocessor.pkl TODO
         model_obj = pd.read_pickle(os.getcwd()+'/base/temp/'+'model_preprocessor.pkl')  #TODO Look to replace
