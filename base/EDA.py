@@ -1203,7 +1203,7 @@ class LogisticPipeline:
                 
         bins_info = self.get_bin_info(result_model_pipelines['model_bins'])
             
-        with open(pl.DefaultInfo.default_staging_location+"/model_preprocessor.pkl", 'wb') as file:
+        with open(os.getcwd()+'/base/'+pl.DefaultInfo.default_staging_location+"/model_preprocessor.pkl", 'wb') as file:
             pickle.dump(result_model_pipelines, file)
     
         #predictions = RefineBSPredictions(test_data = self.testing_set.copy(), result_model_pipeline = refinedResults)
@@ -1211,10 +1211,15 @@ class LogisticPipeline:
         self.log('Fine Tuning Result : Model Info')
         self.log(result_model_pipelines['model_pipeline'])
 
-        firstcut_model = self.pipeline_configuration['model_directory']+"/first_cut_model.pkl"
+        firstcut_model = os.getcwd()+'/base/'+self.pipeline_configuration['model_directory']+"/refined_model.pkl"
 
         with open(firstcut_model, 'wb') as file:
             pickle.dump(result_model_pipelines['model_pipeline'], file)
+
+        firstcut_model = input_path+"/refined_model.pkl"
+        with open(firstcut_model, 'wb') as file:
+            pickle.dump(result_model_pipelines['model_pipeline'], file)
+
 
         #TODO Test
         
@@ -1223,7 +1228,7 @@ class LogisticPipeline:
         reports.generate_reports()
 
         results = reports.get_mlflow_metrics()
-        
+
         import json
 
         with open(input_path+'/results.json', 'w', encoding='utf-8') as fp:
@@ -1237,6 +1242,7 @@ class LogisticPipeline:
         self.save_stage_kf(self,pl.ExecutionStepsKey.model_refining,input_path)
         
         print('End Fine Tuning')
+
 
 
 if __name__=='__main__':
