@@ -360,7 +360,7 @@ class LogisticPipeline:
         chi_sqaure_data = {'Feature_Name':[],'WOE':[],'IV':[]}        
         if (ExecutionStepInputs.TARGET_VARIABLE_GOOD_OUTCOME not in contigency.columns) and (ExecutionStepInputs.TARGET_VARIABLE_BAD_OUTCOME not in contigency.columns):
             print(feature_name)
-            return 0
+            return 0 
         #print(contigency)
         #contigency = contigency.T
         good_count = contigency[ExecutionStepInputs.TARGET_VARIABLE_GOOD_OUTCOME].sum()
@@ -458,7 +458,7 @@ class LogisticPipeline:
         vifs = vifs[vifs <= ExecutionStepInputs.VIF_THRESHOLD]
         self.log("Eliminated following feature : {}".format(eliminated_features))
         filtered_features = set(self.final_feature_set) - set(eliminated_features)
-        self.final_feature_set = list(filtered_features)
+        #self.final_feature_set = list(filtered_features)
         #vifs.to_csv("Reports/Multicolinearity_Report.csv",index=True)
         
     def compute_psi(self,dataset1,dataset2):
