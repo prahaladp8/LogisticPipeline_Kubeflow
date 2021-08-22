@@ -71,7 +71,7 @@ def pre_execute():
         if item.endswith("Pre_Train_Report.xlsx"):
             if os.path.exists(os.getcwd()+"/base/Reports/Pre_Train_Report.xlsx.py"):
                 os.remove(os.getcwd()+"/base/"+item)
-            shutil.copy2(inputpath+'/'+item, os.getcwd()+"/base/" )
+            shutil.copy2(inputpath+'/'+item, os.getcwd()+"/base/")
 
         #shutil.copy2(inputpath+'/'+item, dest_loc)
 

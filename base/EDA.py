@@ -453,10 +453,12 @@ class LogisticPipeline:
         #self.log(vifs)
         vifs = vifs.sort_values(ascending=False)
         self.convert_df_to_html(vifs.to_frame(),self.pipeline_configuration['reports_directory'],'Multicolinearity_Report',hide_index=False)
-        eliminated_features = vifs[vifs >= ExecutionStepInputs.VIF_THRESHOLD].index.tolist()
+        eliminated_features = vifs[vifs >= ExecutionStepInputs.VIF_THRESHOLD].index.tolist()        
         self.log("Removing features with VIFs greater than {}".format(ExecutionStepInputs.VIF_THRESHOLD))
         vifs = vifs[vifs <= ExecutionStepInputs.VIF_THRESHOLD]
         self.log("Eliminated following feature : {}".format(eliminated_features))
+        filtered_features = set(self.final_feature_set) - set(eliminated_features)
+        self.final_feature_set = list(filtered_features)
         #vifs.to_csv("Reports/Multicolinearity_Report.csv",index=True)
         
     def compute_psi(self,dataset1,dataset2):
@@ -1220,6 +1222,10 @@ class LogisticPipeline:
 
         with open(firstcut_model, 'wb') as file:
             pickle.dump(result_model_pipelines['model_pipeline'], file)
+
+        # firstcut_model = input_path+"/refined_model.pkl"
+        # with open(firstcut_model, 'wb') as file:
+        #     pickle.dump(result_model_pipelines['model_pipeline'], file)
 
         kf_loc = input_path + "/model_pipeline.pkl"
         with open(kf_loc, 'wb') as file:
