@@ -148,8 +148,8 @@ class LogisticPipeline:
             self.log("Testing Set Path empty. Creating a testing by spliting the training")
             #self.training_set[TARGET_VARIABLE] = np.where(self.training_set[TARGET_VARIABLE].isin(['Level0']),1,0)            
             dtrain , dtest =  train_test_split(self.training_set, test_size=pl.DefaultInfo.default_train_test_split_ratio,random_state=144)
-            dtrain.reset_index(inplace=True)
-            dtest.reset_index(inplace=True)            
+            dtrain.reset_index(drop = True,inplace = True)
+            dtest.reset_index(drop = True,inplace = True)            
             self.training_set = dtrain
             self.testing_set = dtest
                         
@@ -186,11 +186,11 @@ class LogisticPipeline:
         self.validate_set = transformed_data['PDV']
         '''
         self.training_set = self.training_set.sample(frac=0.1)      #Comment
-        self.training_set = self.training_set.reset_index()         #Comment
+        self.training_set = self.training_set.reset_index(drop = True)         #Comment
         self.testing_set = self.testing_set.sample(frac=0.1)         #Comment    
-        self.testing_set = self.testing_set.reset_index()         #Comment
+        self.testing_set = self.testing_set.reset_index(drop = True)         #Comment
         self.oot_set = self.oot_set.sample(frac=0.1)         #Comment    
-        self.oot_set = self.oot_set.reset_index()         #Comment
+        self.oot_set = self.oot_set.reset_index(drop = True)         #Comment
         '''
         self.final_feature_set = self.training_set.columns.tolist()
         self.setup_defaults()
